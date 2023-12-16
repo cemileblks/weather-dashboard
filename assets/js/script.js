@@ -4,6 +4,7 @@ let searchBtn = $('#search-button');
 let clearBtn = $('#clear-button');
 let searchHistory = $('#history');
 let todayContainer = $('#today');
+let sectionHeader = $('#section-header');
 let forecastContainer = $('#forecast');
 // load the search history first
 document.addEventListener("DOMContentLoaded", function () {
@@ -52,8 +53,9 @@ clearBtn.on("click", function (event) {
     searchHistoryArray = [];
     localStorage.setItem('CityName', JSON.stringify(searchHistoryArray));
     // also clear any remaining search results
-    todayContainer.empty().removeClass('card'); 
+    todayContainer.empty().removeClass('card');
     forecastContainer.empty();
+    sectionHeader.empty();
 });
 
 // when user submits their search input
@@ -67,6 +69,8 @@ searchForm.on("submit", function (event) {
         return; //returns before the empty button can be created
     }
 
+    sectionHeader.empty();
+
     getDataFromAPI(searchInput);
 
     $('#search-input').val(''); // Clear the search input
@@ -77,13 +81,14 @@ let getDataFromAPI = function (cityName) {
     //empty any previous results
     todayContainer.empty();
     forecastContainer.empty();
+    sectionHeader.empty();
 
     let queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&cnt=40&appid=17231fbdb2831307cb3be13a1cf98195&units=metric";
 
     fetch(queryURL)
         .then(function (response) {
             // see if user entered right information
-            if (!response.ok){
+            if (!response.ok) {
                 alert("City not found. Please check your spelling and try again");
                 throw new Error("City not found"); //if user makes mistake while typing the city name
             }
@@ -95,6 +100,11 @@ let getDataFromAPI = function (cityName) {
             displayCurrentWeather(data); //call the function to display today's weather
 
             let weatherArray = data.list;
+
+            // Set a section title
+            let forecatsTitle = $('<h3>').text('5-Day Forecast:').addClass('mt-3');
+            sectionHeader.append(forecatsTitle);
+
 
             for (let i = 0; i < weatherArray.length; i++) {
 
@@ -158,7 +168,7 @@ let displayCurrentWeather = function (data) {
 };
 
 // Function for displaying weather content 
-const concatWeatherData = function(array, container){
+const concatWeatherData = function (array, container) {
     let dataTemp = array.main.temp;
     let tempEl = $('<p>').addClass('card-text mt-2').text("Temp: " + dataTemp + "°C");
     container.append(tempEl);
