@@ -7,12 +7,20 @@ let forecastContainer = $('#forecast');
 
 let searchHistoryArray = JSON.parse(localStorage.getItem('CityName')) || [];
 
+document.addEventListener("DOMContentLoaded", function() {
+    displaySearchHistory();
+});
+
 let saveSearchHistory = function(cityName){
 
     searchHistoryArray.push(cityName);
 
     localStorage.setItem('CityName', JSON.stringify(searchHistoryArray));
 
+    displaySearchHistory();
+};
+
+let displaySearchHistory = function(){
     searchHistory.empty(); // to avoid duplicate buttons
 
     searchHistoryArray.forEach(city => {
