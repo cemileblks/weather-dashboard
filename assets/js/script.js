@@ -1,11 +1,8 @@
 let searchForm = $('#search-form');
-// let searchInput = $('#search-input');
 let searchBtn = $('#search-button');
 let searchHistory = $('#history');
 let todayContainer = $('#today');
 let forecastContainer = $('#forecast');
-
-searchInput = "London"
 
 
 searchForm.on("submit", function (event) {
@@ -15,6 +12,9 @@ searchForm.on("submit", function (event) {
 });
 
 let getDataFromAPI = function (cityName) {
+    todayContainer.empty();
+    forecastContainer.empty();
+
     let queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&cnt=40&appid=17231fbdb2831307cb3be13a1cf98195&units=metric";
 
 
@@ -34,8 +34,6 @@ let getDataFromAPI = function (cityName) {
                 let cityNameEl = $('<h2>').addClass('card-title').text(nameofCity + " (" + dateoftoday + ")");
                 todayContainer.append(cityNameEl);
                 console.log(nameofCity);
-
-                
 
                 let iconCode = todayWeather.weather[0].icon;
                 let iconElement = $('<img>');
@@ -91,10 +89,6 @@ let getDataFromAPI = function (cityName) {
                 cardBody.append(humidityEl);
         
             };
-
-
-
-
 
         })
 
