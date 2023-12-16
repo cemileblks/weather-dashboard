@@ -1,16 +1,19 @@
+//set variables to use throught the js
 let searchForm = $('#search-form');
 let searchBtn = $('#search-button');
 let clearBtn = $('#clear-button');
 let searchHistory = $('#history');
 let todayContainer = $('#today');
 let forecastContainer = $('#forecast');
-
-let searchHistoryArray = JSON.parse(localStorage.getItem('CityName')) || [];
-
+// load the search history first
 document.addEventListener("DOMContentLoaded", function () {
     displaySearchHistory();
 });
 
+//convert search history to workable array
+let searchHistoryArray = JSON.parse(localStorage.getItem('CityName')) || [];
+
+//fumction to save search history
 let saveSearchHistory = function (cityName) {
 
     const lowercaseCityName = cityName.toLowerCase(); // convert to lowercase to check if it is already in the saved array
@@ -22,11 +25,12 @@ let saveSearchHistory = function (cityName) {
 
     searchHistoryArray.push(cityName);
 
-    localStorage.setItem('CityName', JSON.stringify(searchHistoryArray));
+    localStorage.setItem('CityName', JSON.stringify(searchHistoryArray)); // convert to string to store it in the local storage
 
     displaySearchHistory();
 };
 
+// function to create buttons for each item on the search history
 let displaySearchHistory = function () {
     searchHistory.empty(); // to avoid duplicate buttons
 
@@ -40,17 +44,19 @@ let displaySearchHistory = function () {
     });
 };
 
+// button to clear search history
 clearBtn.on("click", function (event) {
     event.preventDefault();
 
     searchHistory.empty();
     searchHistoryArray = [];
     localStorage.setItem('CityName', JSON.stringify(searchHistoryArray));
-    todayContainer.empty().removeClass('card');
+    // also clear any remaining search results
+    todayContainer.empty().removeClass('card'); 
     forecastContainer.empty();
 });
 
-
+// when user submits their search input
 searchForm.on("submit", function (event) {
     event.preventDefault();
     let searchInput = $('#search-input').val();
@@ -66,18 +72,17 @@ searchForm.on("submit", function (event) {
     $('#search-input').val(''); // Clear the search input
 });
 
+// Main function to retrive data from the API
 let getDataFromAPI = function (cityName) {
+    //empty any previous results
     todayContainer.empty();
     forecastContainer.empty();
 
-
-
     let queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&cnt=40&appid=17231fbdb2831307cb3be13a1cf98195&units=metric";
-
 
     fetch(queryURL)
         .then(function (response) {
-            console.log(response);
+            // see if user entered right information
             if (!response.ok){
                 alert("City not found. Please check your spelling and try again");
                 throw new Error("City not found"); //if user makes mistake while typing the city name
@@ -86,17 +91,19 @@ let getDataFromAPI = function (cityName) {
         })
         .then(function (data) {
             saveSearchHistory(cityName); // only save the result if the city name is spelled correctly and data can be retrived
-            console.log(data);
 
-            displayCurrentWeather(data);
+            displayCurrentWeather(data); //call the function to display today's weather
 
             let weatherArray = data.list;
 
             for (let i = 0; i < weatherArray.length; i++) {
+
+                // First get results at 12PM for each day so that the user is not presented with all 40 timestamps
                 let dataHour = dayjs(weatherArray[i].dt_txt).format('H');
-                console.log("Hour: " + dataHour);
-                if (dataHour === "12") { // to get one data for day at 12PM
+
+                if (dataHour === "12") {
                     let eachWeahterData = weatherArray[i];
+
                     //code for creating card for each weather data
                     let weatherElement = $('<div>').addClass('col');
                     forecastContainer.append(weatherElement);
@@ -106,51 +113,39 @@ let getDataFromAPI = function (cityName) {
 
                     let cardBody = $('<div>').addClass('card-body');
                     weatherCard.append(cardBody);
+
                     // using day js to create day format for each card
                     let date = dayjs(eachWeahterData.dt_txt).format('D/M/YYYY');
-
                     let dateEl = $('<h4>').addClass('card-title').text(date);
                     cardBody.append(dateEl);
+
                     // code for icon
                     let iconCode = eachWeahterData.weather[0].icon;
-                    console.log(iconCode);
                     let iconElement = $('<img>');
                     let iconurl = 'https://openweathermap.org/img/w/' + iconCode + '.png';
                     iconElement.attr("src", iconurl);
                     cardBody.append(iconElement);
 
                     concatWeatherData(eachWeahterData, cardBody);
-
-                    // let wtemp = eachWeahterData.main.temp;
-                    // let wtempEl = $('<p>').addClass('card-text mt-2').text("Temp: " + wtemp + "°C");
-                    // cardBody.append(wtempEl);
-                    // let wwind = eachWeahterData.wind.speed;
-                    // let windEl = $('<p>').addClass('card-text').text("Wind: " + (parseFloat(wwind) * 3.6).toFixed(2) + " KPH");
-                    // cardBody.append(windEl);
-                    // let wHumidity = eachWeahterData.main.humidity;
-                    // let humidityEl = $('<p>').addClass('card-text').text("Humidity: " + wHumidity + "%");
-                    // cardBody.append(humidityEl);
                 }
-
             };
-
         })
         .catch(function (error) {
             console.error(error);
         });
-
 };
 
 let displayCurrentWeather = function (data) {
-
     let todayWeather = data.list[0];
+
+    // Set title for the main card with the city name and the date
     let dateoftoday = dayjs(todayWeather.dt_txt).format('D/M/YYYY');
     todayContainer.addClass('card-body card');
     let nameofCity = data.city.name;
     let cityNameEl = $('<h2>').addClass('card-title').text(nameofCity + " (" + dateoftoday + ")");
     todayContainer.append(cityNameEl);
-    console.log(nameofCity);
 
+    // Set larger icon for the main card
     let iconCode = todayWeather.weather[0].icon;
     let iconElement = $('<img>');
     let iconurl = 'https://openweathermap.org/img/w/' + iconCode + '.png';
@@ -158,21 +153,11 @@ let displayCurrentWeather = function (data) {
     iconElement.attr("style", "width: 100px;")
     todayContainer.append(iconElement);
 
+    //call function to display weather and other information
     concatWeatherData(todayWeather, todayContainer);
-
-
-    // let todayTemp = todayWeather.main.temp;
-    // let tempEl = $('<p>').addClass('card-text mt-2').text("Temp: " + todayTemp + "°C");
-    // todayContainer.append(tempEl);
-    // let todayWind = todayWeather.wind.speed;
-    // let windEl = $('<p>').addClass('card-text').text("Wind: " + (parseFloat(todayWind) * 3.6).toFixed(2) + " KPH"); // converts meters per second to KPH
-    // todayContainer.append(windEl);
-    // let todayHumidity = todayWeather.main.humidity;
-    // let humidityEl = $('<p>').addClass('card-text').text("Humidity: " + todayHumidity + "%");
-    // todayContainer.append(humidityEl);
 };
 
-
+// Function for displaying weather content 
 const concatWeatherData = function(array, container){
     let dataTemp = array.main.temp;
     let tempEl = $('<p>').addClass('card-text mt-2').text("Temp: " + dataTemp + "°C");
