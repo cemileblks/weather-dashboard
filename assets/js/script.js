@@ -25,7 +25,7 @@ let getDataFromAPI = function (cityName) {
         .then(function (data) {
             console.log(data);
 
-            let weather = data.list;
+            let weatherArray = data.list;
             // let temp = weather.main.temp + "°C"
             // let wind = weather.wind.speed
             // let humidity = weather.main.humidity
@@ -54,13 +54,13 @@ let getDataFromAPI = function (cityName) {
 
             // }
 
-            for (let i = 0; i < weather.length; i++) {
-                let eachWeahterData = weather[i];
+            for (let i = 0; i < weatherArray.length; i++) {
+                let eachWeahterData = weatherArray[i];
 
                 let weatherElement = $('<div>').addClass('col');
                 forecastContainer.append(weatherElement);
 
-                let weatherCard = $('<div>').addClass('card dark-card');
+                let weatherCard = $('<div>').addClass('card text-bg-dark');
                 weatherElement.append(weatherCard);
 
                 let cardBody = $('<div>').addClass('card-body');
@@ -70,6 +70,15 @@ let getDataFromAPI = function (cityName) {
 
                 let dateEl = $('<h3>').addClass('card-title').text(date);
                 cardBody.append(dateEl);
+
+                let iconCode = eachWeahterData.weather[0].icon;
+                console.log(iconCode);
+                let iconElement = $('<img>');
+                let iconurl = 'https://openweathermap.org/img/w/' + iconCode + '.png';
+                iconElement.attr("src", iconurl);
+                cardBody.append(iconElement);
+                
+                
 
 
         
