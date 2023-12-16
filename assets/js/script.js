@@ -54,6 +54,27 @@ let getDataFromAPI = function (cityName) {
 
             // }
 
+            for (let i = 0; i < weather.length; i++) {
+                let eachWeahterData = weather[i];
+
+                let weatherElement = $('<div>').addClass('col');
+                forecastContainer.append(weatherElement);
+
+                let weatherCard = $('<div>').addClass('card dark-card');
+                weatherElement.append(weatherCard);
+
+                let cardBody = $('<div>').addClass('card-body');
+                weatherCard.append(cardBody);
+
+                let date = dayjs(eachWeahterData.dt_txt).format('D/M/YYYY');
+
+                let dateEl = $('<h3>').addClass('card-title').text(date);
+                cardBody.append(dateEl);
+
+
+        
+            };
+
 
 
 
