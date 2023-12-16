@@ -39,6 +39,8 @@ clearBtn.on("click", function(event){
     searchHistory.empty();
     searchHistoryArray = [];
     localStorage.setItem('CityName', JSON.stringify(searchHistoryArray));
+    todayContainer.empty().removeClass('card');
+    forecastContainer.empty();
 });
 
 
