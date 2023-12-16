@@ -4,11 +4,30 @@ let searchHistory = $('#history');
 let todayContainer = $('#today');
 let forecastContainer = $('#forecast');
 
+let searchHistoryArray = JSON.parse(localStorage.getItem('CityName')) || [];
+
+let saveSearchHistory = function(cityName){
+
+    searchHistoryArray.push(cityName);
+
+    localStorage.setItem('CityName', JSON.stringify(searchHistoryArray));
+
+    searchHistory.empty();
+
+    searchHistoryArray.forEach(city => {
+        let cityButton = $('<button>').addClass('btn btn-secondary city-search-button mt-2 form-control');
+        cityButton.text(city);
+        searchHistory.append(cityButton);
+    });
+};
+
 
 searchForm.on("submit", function (event) {
     event.preventDefault();
     let searchInput = $('#search-input').val();
     getDataFromAPI(searchInput);
+    saveSearchHistory(searchInput);
+    $('#search-input').val(''); // Clear the search input
 });
 
 let getDataFromAPI = function (cityName) {
@@ -47,7 +66,7 @@ let getDataFromAPI = function (cityName) {
                 let tempEl = $('<p>').addClass('card-text mt-2').text("Temp: " + todayTemp + "°C");
                 todayContainer.append(tempEl);
                 let todayWind = todayWeather.wind.speed;
-                let windEl = $('<p>').addClass('card-text').text("Wind: " + (parseFloat(todayWind) * 3.6).toFixed(2) + " KPH");
+                let windEl = $('<p>').addClass('card-text').text("Wind: " + (parseFloat(todayWind) * 3.6).toFixed(2) + " KPH"); // converts meters per second to KPH
                 todayContainer.append(windEl);
                 let todayHumidity = todayWeather.main.humidity;
                 let humidityEl = $('<p>').addClass('card-text').text("Humidity: " + todayHumidity + "%");
@@ -57,7 +76,7 @@ let getDataFromAPI = function (cityName) {
             for (let i = 0; i < weatherArray.length; i++) {
                 let dataHour = dayjs(weatherArray[i].dt_txt).format('H');
                 console.log("Hour: " + dataHour);
-                if (dataHour === "12"){
+                if (dataHour === "12"){ // to get one data for day at 12PM
                     let eachWeahterData = weatherArray[i];
                     //code for creating card for each weather data
                     let weatherElement = $('<div>').addClass('col');
