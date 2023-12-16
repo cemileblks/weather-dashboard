@@ -12,12 +12,15 @@ let saveSearchHistory = function(cityName){
 
     localStorage.setItem('CityName', JSON.stringify(searchHistoryArray));
 
-    searchHistory.empty();
+    searchHistory.empty(); // to avoid duplicate buttons
 
     searchHistoryArray.forEach(city => {
         let cityButton = $('<button>').addClass('btn btn-secondary city-search-button mt-2 form-control');
         cityButton.text(city);
         searchHistory.append(cityButton);
+        cityButton.on("click", function(){
+            getDataFromAPI(city); // load data for each button 
+        });
     });
 };
 
