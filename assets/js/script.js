@@ -26,13 +26,16 @@ let getDataFromAPI = function (cityName) {
             console.log(data);
 
             let weatherArray = data.list;
-
+                
                 let todayWeather = data.list[0];
+                let dateoftoday = dayjs(todayWeather.dt_txt).format('D/M/YYYY');
                 todayContainer.addClass('card-body card');
                 let nameofCity = data.city.name;
-                let cityNameEl = $('<h2>').addClass('card-title').text(nameofCity);
+                let cityNameEl = $('<h2>').addClass('card-title').text(nameofCity + " (" + dateoftoday + ")");
                 todayContainer.append(cityNameEl);
                 console.log(nameofCity);
+
+                
 
                 let iconCode = todayWeather.weather[0].icon;
                 let iconElement = $('<img>');
@@ -67,7 +70,7 @@ let getDataFromAPI = function (cityName) {
                 // using day js to create day format for each card
                 let date = dayjs(eachWeahterData.dt_txt).format('D/M/YYYY');
 
-                let dateEl = $('<h3>').addClass('card-title').text(date);
+                let dateEl = $('<h4>').addClass('card-title').text(date);
                 cardBody.append(dateEl);
                 // code for icon
                 let iconCode = eachWeahterData.weather[0].icon;
