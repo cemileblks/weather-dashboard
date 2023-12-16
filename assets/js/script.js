@@ -13,6 +13,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 let saveSearchHistory = function (cityName) {
 
+    const lowercaseCityName = cityName.toLowerCase(); // convert to lowercase to check if it is already in the saved array
+
+    if (searchHistoryArray.map(city => city.toLowerCase()).includes(lowercaseCityName)) {
+        // If the city is already in the saved history, just return without adding it again
+        return;
+    };
+
     searchHistoryArray.push(cityName);
 
     localStorage.setItem('CityName', JSON.stringify(searchHistoryArray));
@@ -47,8 +54,15 @@ clearBtn.on("click", function (event) {
 searchForm.on("submit", function (event) {
     event.preventDefault();
     let searchInput = $('#search-input').val();
+
+    if (!searchInput) {
+        // if user gives an empty input
+        alert("Please enter a city name");
+        return; //returns before the empty button can be created
+    }
+
     getDataFromAPI(searchInput);
-    saveSearchHistory(searchInput);
+
     $('#search-input').val(''); // Clear the search input
 });
 
@@ -56,14 +70,22 @@ let getDataFromAPI = function (cityName) {
     todayContainer.empty();
     forecastContainer.empty();
 
+
+
     let queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&cnt=40&appid=17231fbdb2831307cb3be13a1cf98195&units=metric";
 
 
     fetch(queryURL)
         .then(function (response) {
+            console.log(response);
+            if (!response.ok){
+                alert("City not found. Please check your spelling and try again");
+                throw new Error("City not found"); //if user makes mistake while typing the city name
+            }
             return response.json();
         })
         .then(function (data) {
+            saveSearchHistory(cityName); // only save the result if the city name is spelled correctly and data can be retrived
             console.log(data);
 
             displayCurrentWeather(data);
@@ -112,6 +134,9 @@ let getDataFromAPI = function (cityName) {
 
             };
 
+        })
+        .catch(function (error) {
+            console.error(error);
         });
 
 };
