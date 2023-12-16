@@ -1,5 +1,6 @@
 let searchForm = $('#search-form');
 let searchBtn = $('#search-button');
+let clearBtn = $('#clear-button');
 let searchHistory = $('#history');
 let todayContainer = $('#today');
 let forecastContainer = $('#forecast');
@@ -23,6 +24,14 @@ let saveSearchHistory = function(cityName){
         });
     });
 };
+
+clearBtn.on("click", function(event){
+    event.preventDefault();
+    
+    searchHistory.empty();
+    searchHistoryArray = [];
+    localStorage.setItem('CityName', JSON.stringify(searchHistoryArray));
+});
 
 
 searchForm.on("submit", function (event) {
