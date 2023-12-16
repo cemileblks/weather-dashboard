@@ -26,11 +26,6 @@ let getDataFromAPI = function (cityName) {
             console.log(data);
 
             let weatherArray = data.list;
-            // let temp = weather.main.temp + "°C"
-            // let wind = weather.wind.speed
-            // let humidity = weather.main.humidity
-
-            // for (let i = 0; i < weather.length; i++) {
 
                 let todayWeather = data.list[0];
                 todayContainer.addClass('card-body card');
@@ -39,24 +34,28 @@ let getDataFromAPI = function (cityName) {
                 todayContainer.append(cityNameEl);
                 console.log(nameofCity);
 
+                let iconCode = todayWeather.weather[0].icon;
+                let iconElement = $('<img>');
+                let iconurl = 'https://openweathermap.org/img/w/' + iconCode + '.png';
+                iconElement.attr("src", iconurl);
+                iconElement.attr("style", "width: 100px;" )
+                todayContainer.append(iconElement);
+
+
                 let todayTemp = todayWeather.main.temp;
-                let tempEl = $('<p>').addClass('card-text mt-2').text(todayTemp + "°C");
+                let tempEl = $('<p>').addClass('card-text mt-2').text("Temp: " + todayTemp + "°C");
                 todayContainer.append(tempEl);
                 let todayWind = todayWeather.wind.speed;
-                let windEl = $('<p>').addClass('card-text').text(todayWind + "mph");
+                let windEl = $('<p>').addClass('card-text').text("Wind: " + (parseFloat(todayWind) * 3.6).toFixed(2) + " KPH");
                 todayContainer.append(windEl);
                 let todayHumidity = todayWeather.main.humidity;
-                let humidityEl = $('<p>').addClass('card-text').text(todayHumidity + "%");
+                let humidityEl = $('<p>').addClass('card-text').text("Humidity: " + todayHumidity + "%");
                 todayContainer.append(humidityEl);
 
 
-                // const element = array[i];
-
-            // }
-
             for (let i = 0; i < weatherArray.length; i++) {
                 let eachWeahterData = weatherArray[i];
-
+                //code for creating card for each weather data
                 let weatherElement = $('<div>').addClass('col');
                 forecastContainer.append(weatherElement);
 
@@ -65,22 +64,28 @@ let getDataFromAPI = function (cityName) {
 
                 let cardBody = $('<div>').addClass('card-body');
                 weatherCard.append(cardBody);
-
+                // using day js to create day format for each card
                 let date = dayjs(eachWeahterData.dt_txt).format('D/M/YYYY');
 
                 let dateEl = $('<h3>').addClass('card-title').text(date);
                 cardBody.append(dateEl);
-
+                // code for icon
                 let iconCode = eachWeahterData.weather[0].icon;
                 console.log(iconCode);
                 let iconElement = $('<img>');
                 let iconurl = 'https://openweathermap.org/img/w/' + iconCode + '.png';
                 iconElement.attr("src", iconurl);
                 cardBody.append(iconElement);
-                
-                
 
-
+                let wtemp = eachWeahterData.main.temp;
+                let wtempEl = $('<p>').addClass('card-text mt-2').text("Temp: " + wtemp + "°C");
+                cardBody.append(wtempEl);
+                let wwind = eachWeahterData.wind.speed;
+                let windEl = $('<p>').addClass('card-text').text("Wind: " + (parseFloat(wwind) * 3.6).toFixed(2) + " KPH");
+                cardBody.append(windEl);
+                let wHumidity = eachWeahterData.main.humidity;
+                let humidityEl = $('<p>').addClass('card-text').text("Humidity: " + wHumidity + "%");
+                cardBody.append(humidityEl);
         
             };
 
